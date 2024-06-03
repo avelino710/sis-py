@@ -1,0 +1,68 @@
+
+import sqlite3
+
+
+conn = sqlite3.connect('materiais.db')
+
+
+conn.execute('''CREATE TABLE IF NOT EXISTS materiais
+             (id INTEGER PRIMARY KEY AUTOINCREMENT,
+              nome TEXT NOT NULL,
+              quantidade INTEGER NOT NULL,
+              preco_unitario REAL NOT NULL);''')
+
+
+def adicionar_material(nome, quantidade, preco_unitario):
+    conn.execute('INSERT INTO materiais (nome, quantidade, preco_unitario) VALUES (?, ?, ?)', (nome, quantidade, preco_unitario))
+    conn.commit()
+    print('Material adicionado com sucesso.')
+
+
+def listar_materiais():
+    cursor = conn.execute('SELECT * FROM materiais')
+    for row in cursor:
+        print(f'ID: {row[0]}, Nome: {row[1]}, Quantidade: {row[2]}, Preço Unitário: R${row[3]}')
+
+
+def atualizar_quantidade(id_material, quantidade):
+    conn.execute('UPDATE materiais SET quantidade = ? WHERE id = ?', (quantidade, id_material))
+    conn.commit()
+    print('Quantidade atualizada com sucesso.')
+
+
+def deletar_material(id_material):
+    conn.execute('DELETE FROM materiais WHERE id = ?', (id_material,))
+    conn.commit()
+    print('Material deletado com sucesso.')
+
+
+while True:
+    print('O que deseja fazer?')
+    print('1 - Adicionar material')
+    print('2 - Listar materiais')
+    print('3 - Atualizar quantidade de material')
+    print('4 - Deletar material')
+    print('5 - Sair')
+
+    opcao = int(input('Opção: '))
+
+    if opcao == 1:
+        nome = input('Nome do material: ')
+        quantidade = int(input('Quantidade: '))
+        preco_unitario = float(input('Preço unitário: R$'))
+        adicionar_material(nome, quantidade, preco_unitario)
+    elif opcao == 2:
+        listar_materiais()
+    elif opcao == 3:
+        id_material = int(input('ID do material: '))
+        quantidade = int(input('Nova quantidade: '))
+        atualizar_quantidade(id_material, quantidade)
+    elif opcao == 4:
+        id_material = int(input('ID do material: '))
+        deletar_material(id_material)
+    elif opcao == 5:
+        conn.close()
+        break
+    else:
+        print('Opção inválida. Tente novamente.')
+
